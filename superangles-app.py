@@ -39,7 +39,7 @@ def execute_sql_query(sql):
         host="localhost",
         user="root",
         password="",
-        database="events",
+        database="superangles",
         
         
     )
@@ -57,37 +57,65 @@ prompt = [
     """
     You are an expert in converting English questions to SQL queries!
     
-    Your database consists of two tables: `speakers` and `eventslist;`.
+    Your database consists of two tables: `1_live_career_counseling_sessions_speaker`,`1_contactus`,`1_exhibitor_gallery`,`1_event_master`.
     
-    The `speakers` table has the following columns:
-    - speaker_id (Primary Key)
-    - speaker_name
-    - event_id (Foreign Key referencing event_id in the `eventslist` table)
+    The `1_live_career_counseling_sessions_speaker` table has the following columns:
+    - lccss_id (Primary Key)
+    - lccss_name
+    - lccss_email
+    - lccss_company_name
+    - lccss_time
+    - lccss_designation
+    - lccss_description
+    - lccss_linkedin
+    - lccss_twitter
+    - lccss_instagram
+    - lccss_pic
+    - speaker_status
+    - lccss_status
     
-    The `eventslist` table has the following columns:
-    - event_id (Primary Key)
-    - event_name \n\n For example,\nExample 1: How many speakers are there for the event "Tech Expo 2023"?
-    The SQL command will be something like this SELECT COUNT(*) FROM speakers WHERE  event_name = 'Tech Expo 2023';
-    \nExample 2: List all speakers for the event "Global Business Forum".
-    The SQL command will be something like this SELECT s.speaker_name FROM speakers s JOIN events e ON s.event_id = e.event_id WHERE e.event_name = 'Global Business Forum';
+    The `1_contactus` table has the following columns:
+    - cu_id (Primary Key)
+    - First_name
+    - Last_name
+    - Designation
+    - Email
+    - Mobile
+    - Message
+    - DateTime
+
+    The `1_exhibitor_gallery` table has the following colums:
+    - eg_name
+    - eg_caption
+    - eg_status
+
+    The `1_event_master` table has the following columns;
+    - aem_event_nickname
+    - aem_name
+    - aem_shortname
+    - aem_description
+    - aem_organized_by
+    - aem_full_address
+    - aem_location
+    - aem_location_coordinates
+    - aem_live_date_time
+    - aem_start_date
+    - aem_end_date
+    - aem_relaxation_date \n\n For example,\nExample 1: Give me the contact details?
+    The SQL command will be something like this SELECT * FROM 1_contactus;
+    \nExample 2: List all speakers of superangles summit?.
+    The SQL command will be something like this SELECT lccss_name,lccss_company_name,lccss_description FROM 1_live_career_counseling_sessions_speaker;
+    \nExample 3: List all exhibitor of superangles summit?.
+    The SQL command will be something like this SELECT eg_name,eg_caption,eg_status FROM 1_exhibitor_gallery;
+    \nExample 3: List all the  events?.
+    The SQL command will be something like this SELECT aem_event_nickname,aem_name,aem_description FROM 1_event_master;
     
+
     also the sql code should not have ``` in beginning or end and sql word in output
     """
 ]
 
 
-# prompt=[
-#     """
-#     You are an expert in converting English questions to SQL query!
-#     The SQL database has the name Event and has the following columns - NAME, DESCRIPTION, 
-#     SECTION \n\nFor example,\nExample 1 - How many entries of records are present?, 
-#     the SQL command will be something like this SELECT COUNT(*) FROM Event ;
-#     \nExample 2 - Tell me  the Event Description happening in Conference 2024?, 
-#     the SQL command will be something like this SELECT * FROM Event 
-#     where Name="Conference 2024"; 
-#     also the sql code should not have ``` in beginning or end and sql word in output
-#     """
-# ]
 
 
 #Streamlit app
@@ -99,14 +127,6 @@ submit = st.button("Ask the question")
 
 #if submit is clicked
 
-# if submit:
-#     response = get_gemini_response(question,prompt)
-#     print(response)
-#     response = read_sql_query(response,"eventdatabase.db")
-#     st.subheader("The Response is")
-#     for row in response:
-#         print(row)
-#         st.header(row)
 
 if submit:
     response = get_gemini_response(question, prompt)
