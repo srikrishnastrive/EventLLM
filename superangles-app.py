@@ -57,7 +57,7 @@ prompt = [
     """
     You are an expert in converting English questions to SQL queries!
     
-    Your database consists of two tables: `1_live_career_counseling_sessions_speaker`,`1_contactus`,`1_exhibitor_gallery`,`1_event_master`.
+    Your database consists of two tables: `1_live_career_counseling_sessions_speaker`,`1_live_career_counseling_sessions`,`1_contactus`,`1_sessions_speaker_mapping`,`1_exhibitor_gallery`,`1_event_master`.
     
     The `1_live_career_counseling_sessions_speaker` table has the following columns:
     - lccss_id (Primary Key)
@@ -73,6 +73,44 @@ prompt = [
     - lccss_pic
     - speaker_status
     - lccss_status
+
+    The `1_live_career_counseling_sessions` table has the follwing colums:
+    - lccs_id
+    - aem_id
+    - lccs_type
+    - lccs_name
+    - lccs_sub_title
+    - lccs_speaker_name
+    - lccs_moderator_pic
+    - lccs_moderator_name
+    - lccs_moderator_designation
+    - lccs_moderator_desc
+    - lccs_host_pic
+    - lccs_host_designation: varchar(255) DEFAULT NULL
+    - lccs_host_desc: varchar(255) DEFAULT NULL
+    - lccs_start_datewtime_for_showlive: datetime DEFAULT NULL
+    - lccs_start_datewtime: datetime DEFAULT NULL
+    - lccs_end_datewtime: datetime DEFAULT NULL
+    - lccs_zoom_id: varchar(255) DEFAULT NULL
+    - lccs_zoom_pwd: varchar(120) DEFAULT NULL
+    - lcss_room_id: varchar(255) DEFAULT NULL
+    - lccs_live_status: enum('live','yet_to_start','finished') NOT NULL DEFAULT 'yet_to_start'
+    - lccs_past_session_video_url: varchar(255) DEFAULT NULL
+    - lccs_orderby: int(11) DEFAULT NULL
+    - lccs_status: enum('active','inactive') DEFAULT 'active'
+    - lccss_meeting_id: longtext NOT NULL
+    - lccss_meeting_room_name: longtext NOT NULL
+    - lccss_meeting_url: longtext NOT NULL
+
+    
+
+    The `1_sessions_speaker_mapping` table has the following colums:
+    -  ssm_id
+    -  lccs_id
+    -  lccss_id
+    -  ssm_status
+  
+    
     
     The `1_contactus` table has the following columns:
     - cu_id (Primary Key)
@@ -105,9 +143,13 @@ prompt = [
     The SQL command will be something like this SELECT * FROM 1_contactus;
     \nExample 2: List all speakers of superangles summit?.
     The SQL command will be something like this SELECT lccss_name,lccss_company_name,lccss_description FROM 1_live_career_counseling_sessions_speaker;
-    \nExample 3: List all exhibitor of superangles summit?.
+    \nExample 3: List all the speakers of Opening Ceremony?.
+    The SQL command will be something like this SELECT s.lccss_name FROM 1_live_career_counseling_sessions ses JOIN 1_sessions_speaker_mapping map ON ses.lccs_id = map.lccs_id JOIN 1_live_career_counseling_sessions_speaker s ON map.lccss_id = s.lccss_id WHERE ses.lccs_name = 'Opening Ceremony';
+    /nExample 4: List all the sessions of Ashneer Grover.
+    The SQL command will be something like this: SELECT ses.lccs_name FROM 1_live_career_counseling_sessions ses JOIN 1_sessions_speaker_mapping map ON ses.lccs_id = map.lccs_id JOIN 1_live_career_counseling_sessions_speaker s ON map.lccss_id = s.lccss_id WHERE s.lccss_name = 'Ashneer Grover';
+    \nExample 5: List all exhibitor of superangles summit?.
     The SQL command will be something like this SELECT eg_name,eg_caption,eg_status FROM 1_exhibitor_gallery;
-    \nExample 3: List all the  events?.
+    \nExample 6: List all the  events?.
     The SQL command will be something like this SELECT aem_event_nickname,aem_name,aem_description FROM 1_event_master;
     
 
