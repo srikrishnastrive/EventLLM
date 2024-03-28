@@ -1,4 +1,3 @@
-#Invoice Extractor
 
 from dotenv import load_dotenv
 
@@ -8,6 +7,7 @@ import os
 import sqlite3
 import google.generativeai as genai
 import mysql.connector
+import re
 
 ##configuring api key
 ##google authenticating the key
@@ -21,18 +21,7 @@ def get_gemini_response(question,prompt):
     response = model.generate_content([prompt[0],question])
     return response.text
 
-##Function to retrive the query from the database
 
-# def read_sql_query(sql,db):
-#     conn = sqlite3.connect(db)
-#     cur = conn.cursor()
-#     cur.execute(sql)
-#     rows = cur.fetchall()
-#     conn.commit()
-#     conn.close()
-#     for row in rows:
-#         print(row)
-#     return rows
 
 def execute_sql_query(sql):
     connection = mysql.connector.connect(
@@ -57,7 +46,7 @@ prompt = [
     """
     You are an expert in converting English questions to SQL queries!
     
-    Your database consists of two tables: `1_live_career_counseling_sessions_speaker`,`1_live_career_counseling_sessions`,`1_contactus`,`1_sessions_speaker_mapping`,`1_exhibitor_gallery`,`1_event_master`.
+    Your database consists of two tables: `1_live_career_counseling_sessions_speaker`,`1_live_career_counseling_sessions`,`1_contactus`,`1_sessions_speaker_mapping`,`1_exhibitor_gallery`,`1_event_master`,`1_exhibitor_master`.
     
     The `1_live_career_counseling_sessions_speaker` table has the following columns:
     - lccss_id (Primary Key)
@@ -73,6 +62,105 @@ prompt = [
     - lccss_pic
     - speaker_status
     - lccss_status
+
+    The `1_exhibitor_master` table has the following colums:
+    - exhim_id
+    - exhim_organization_name
+    - exhim_custom_page
+    - ot_id
+    - ebm_id
+    - exhim_logo
+    - exhim_stall_no
+    - exhim_hall_no
+    - exhim_stall_size
+    - exhim_banner
+    - exhim_mo_v_banner
+    - exhim_standee
+    - exhim_standee1
+    - exhim_standee2
+    - exhim_standee3
+    - exhim_standee4
+    - exhim_mo_standee
+    - exhim_right_standee
+    - exhim_right_standee_mo
+    - exhim_stall_backdropofvideo
+    - exhim_stall_video
+    - exhim_desk_logo
+    - exhim_lobby_image
+    - exhim_lobbyvideo
+    - exhim_punchline
+    - exhim_detail
+    - section_head
+    - exhim_fact_sheet_html
+    - exhim_contact_us
+    - counm_id
+    - sm_id
+    - cm_id
+    - exhim_address
+    - exhim_type_of_institute
+    - exhim_ownership
+    - exhim_estd_year
+    - exhim_accreditation
+    - exhim_recognition
+    - exhim_campus_area
+    - exhim_approval
+    - exhim_brochure
+    - exhim_qs_i_gauge
+    - exhim_qs_logo
+    - exhim_scholarship
+    - exhim_scholarship_percentage
+    - exhim_NoPaperForms
+    - exhim_np_secret_key
+    - exhim_np_college_id
+    - exhim_admission_details_html
+    - exhim_facebook_link
+    - exhim_web_link
+    - exhim_youtube_link
+    - exhim_instagram_link
+    - exhim_twitter_link
+    - exhim_linkedIn_link
+    - exhim_whatsapp
+    - exhim_profile
+    - exhim_industry
+    - exhim_group
+    - exhim_contact_person
+    - exhim_contact_email
+    - exhim_organisation_email
+    - exhim_login_id
+    - em_chatbot_script
+    - exhim_insert
+    - exhim_update
+    - exhim_status
+    - display
+    - contact_person_incharge
+    - exhim_designation
+    - office_phone_code
+    - office_contact_number
+    - fax_code
+    - fax_number
+    - ppm_id_custom
+    - ppm_id
+    - ppmm_id
+    - mail_sent
+    - exhim_scroller_text
+    - wall_poster
+    - wall_poster1
+    - wall_poster2
+    - wall_poster3
+    - wall_poster4
+    - wall_poster5
+    - wall_poster6
+    - wall_poster7
+    - wall_poster8
+    - th_wall_poster
+    - th_wall_poster1
+    - th_wall_poster2
+    - th_wall_poster3
+    - th_wall_poster4
+    - th_wall_poster5
+    - th_wall_poster6
+    - th_wall_poster7
+
 
     The `1_live_career_counseling_sessions` table has the follwing colums:
     - lccs_id
@@ -140,18 +228,25 @@ prompt = [
     - aem_start_date
     - aem_end_date
     - aem_relaxation_date \n\n For example,\nExample 1: Give me the contact details?
-    The SQL command will be something like this SELECT * FROM 1_contactus;
+    The SQL command will be something like this SELECT First_name,Last_name,Email,Mobile FROM 1_contactus;
     \nExample 2: List all speakers of superangles summit?.
-    The SQL command will be something like this SELECT lccss_name,lccss_company_name,lccss_description FROM 1_live_career_counseling_sessions_speaker;
+    The SQL command will be something like this SELECT lccss_name, FROM 1_live_career_counseling_sessions_speaker;
     \nExample 3: List all the speakers of Opening Ceremony?.
     The SQL command will be something like this SELECT s.lccss_name FROM 1_live_career_counseling_sessions ses JOIN 1_sessions_speaker_mapping map ON ses.lccs_id = map.lccs_id JOIN 1_live_career_counseling_sessions_speaker s ON map.lccss_id = s.lccss_id WHERE ses.lccs_name = 'Opening Ceremony';
     /nExample 4: List all the sessions of Ashneer Grover.
     The SQL command will be something like this: SELECT ses.lccs_name FROM 1_live_career_counseling_sessions ses JOIN 1_sessions_speaker_mapping map ON ses.lccs_id = map.lccs_id JOIN 1_live_career_counseling_sessions_speaker s ON map.lccss_id = s.lccss_id WHERE s.lccss_name = 'Ashneer Grover';
     \nExample 5: List all exhibitor of superangles summit?.
-    The SQL command will be something like this SELECT eg_name,eg_caption,eg_status FROM 1_exhibitor_gallery;
+    The SQL command will be something like this SELECT eg_name FROM 1_exhibitor_gallery;
     \nExample 6: List all the  events?.
-    The SQL command will be something like this SELECT aem_event_nickname,aem_name,aem_description FROM 1_event_master;
-    
+    The SQL command will be something like this SELECT aem_name, FROM 1_event_master;
+    \nExample 7: List all the Exhibitors of Super Angels summit?.
+    The SQL command will be something like this SELECT em.exhim_organization_name FROM `1_exhibitor_event_mapping` eem JOIN `1_exhibitor_master` em ON eem.exhim_id = em.exhim_id JOIN `1_event_master` ev ON eem.aem_id = ev.aem_id WHERE ev.aem_event_nickname = 'super_angels_summit';
+    \nExample 8: List all the events Organised by ibentos?
+    The SQL command will be something like SELECT ev.aem_name FROM `1_event_master` ev WHERE ev.aem_organized_by = 'ibentos';
+    \nExample 9:List all the hall names  of the ibentos?
+    The SQL command will be something like SELECT DISTINCT ehc.ehc_hall_name,ehc.ehc_name FROM `1_event_master` aem JOIN `1_exhibitor_event_mapping` eem ON aem.aem_id = eem.aem_id JOIN `1_exhibitor_hall_category` ehc ON eem.ehc_id = ehc.ehc_id WHERE aem.aem_organized_by = 'ibentos';
+    \nExample 10: List all organization names of the exhibitors?
+    The SQL command will be something like SELECT exhim_organization_name from 1_exhibitor_master;
 
     also the sql code should not have ``` in beginning or end and sql word in output
     """
@@ -171,11 +266,21 @@ submit = st.button("Ask the question")
 
 
 if submit:
-    response = get_gemini_response(question, prompt)
-    print(response)
-    response = execute_sql_query(response)
-    st.subheader("The Response is")
-    for row in response:
-        print(row)
-        st.write(row)  # Write each row to the Streamlit app
-
+    if not question:  # If the question input is empty
+        st.error("Please enter a question.")  # Display an error message
+    else:
+        response = get_gemini_response(question, prompt)
+        print(response)
+        response = execute_sql_query(response)
+        if not response:  # If the result set is empty
+            # Generate a new prompt indicating "No Data Found"
+            no_data_prompt = "No data found for the given query."
+            response = get_gemini_response(question, [no_data_prompt])
+            st.subheader("No Data Found")
+            st.write("The query returned no results.")
+            st.write("Prompt used:", no_data_prompt)
+        else:
+            st.subheader("The Response is")
+            for row in response:
+                print(row)
+                st.write(row)  # Write each row to the Streamlit app
