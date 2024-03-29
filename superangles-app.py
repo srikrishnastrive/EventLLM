@@ -46,7 +46,7 @@ prompt = [
     """
     You are an expert in converting English questions to SQL queries!
     
-    Your database consists of two tables: `1_live_career_counseling_sessions_speaker`,`1_live_career_counseling_sessions`,`1_contactus`,`1_sessions_speaker_mapping`,`1_exhibitor_gallery`,`1_event_master`,`1_exhibitor_master`.
+    Your database consists of two tables: `1_live_career_counseling_sessions_speaker`,`1_live_career_counseling_sessions`,`1_contactus`,`1_sessions_speaker_mapping`,`1_exhibitor_gallery`,`1_event_master`,`1_exhibitor_master`,1_exhibitor_hall_category.
     
     The `1_live_career_counseling_sessions_speaker` table has the following columns:
     - lccss_id (Primary Key)
@@ -62,6 +62,22 @@ prompt = [
     - lccss_pic
     - speaker_status
     - lccss_status
+
+    The `1_exhibitor_hall_category`  table has the following columns:
+    - ehc_id
+    - aem_id
+    - ehc_hall_name
+    - ehc_name
+    - ehc_hall_bgimage
+    - ehc_hall_presentation_video
+    - gcm_id
+    - ehc_is_booth_list
+    - ehc_is_product_list
+    - ehc_product_main_title
+    - ehc_product_title
+    - ehc_order
+    - ehc_status
+
 
     The `1_exhibitor_master` table has the following colums:
     - exhim_id
@@ -216,18 +232,48 @@ prompt = [
     - eg_status
 
     The `1_event_master` table has the following columns;
+    - aem_id
+    - tm_id
+    - parent_aem_id
+    - bm_id
     - aem_event_nickname
     - aem_name
-    - aem_shortname
+    - aem_short_name
     - aem_description
+    - aem_tag_line
     - aem_organized_by
+    - aem_organizer_website
     - aem_full_address
     - aem_location
     - aem_location_coordinates
     - aem_live_date_time
+    - aem_custom_start_date
     - aem_start_date
     - aem_end_date
-    - aem_relaxation_date \n\n For example,\nExample 1: Give me the contact details?
+    - aem_relaxation_date
+    - aem_date
+    - aem_event_date
+    - aem_day
+    - aem_date_intext
+    - aem_time
+    - aem_timezones
+    - aem_mail_html
+    - aem_mail_subject
+    - aem_otp_mail_html
+    - aem_otp_mail_subject
+    - aem_sms_text
+    - aem_sms_template
+    - aem_is_send_whatsapp
+    - aem_logo_image
+    - aem_logo_poweredby
+    - aem_header_img
+    - aem_orderby
+    - aem_viewinlist
+    - aem_ai_enabled
+    - aem_colors
+    - aem_status
+    - aem_insert_time
+    - aem_update_time \n\n For example,\nExample 1: Give me the contact details?
     The SQL command will be something like this SELECT First_name,Last_name,Email,Mobile FROM 1_contactus;
     \nExample 2: List all speakers of superangles summit?.
     The SQL command will be something like this SELECT lccss_name, FROM 1_live_career_counseling_sessions_speaker;
@@ -235,17 +281,15 @@ prompt = [
     The SQL command will be something like this SELECT s.lccss_name FROM 1_live_career_counseling_sessions ses JOIN 1_sessions_speaker_mapping map ON ses.lccs_id = map.lccs_id JOIN 1_live_career_counseling_sessions_speaker s ON map.lccss_id = s.lccss_id WHERE ses.lccs_name = 'Opening Ceremony';
     /nExample 4: List all the sessions of Ashneer Grover.
     The SQL command will be something like this: SELECT ses.lccs_name FROM 1_live_career_counseling_sessions ses JOIN 1_sessions_speaker_mapping map ON ses.lccs_id = map.lccs_id JOIN 1_live_career_counseling_sessions_speaker s ON map.lccss_id = s.lccss_id WHERE s.lccss_name = 'Ashneer Grover';
-    \nExample 5: List all exhibitor of superangles summit?.
+    \nExample 5: List all exhibitors of superangles summit?.
     The SQL command will be something like this SELECT eg_name FROM 1_exhibitor_gallery;
     \nExample 6: List all the  events?.
     The SQL command will be something like this SELECT aem_name, FROM 1_event_master;
     \nExample 7: List all the Exhibitors of Super Angels summit?.
     The SQL command will be something like this SELECT em.exhim_organization_name FROM `1_exhibitor_event_mapping` eem JOIN `1_exhibitor_master` em ON eem.exhim_id = em.exhim_id JOIN `1_event_master` ev ON eem.aem_id = ev.aem_id WHERE ev.aem_event_nickname = 'super_angels_summit';
-    \nExample 8: List all the events Organised by ibentos?
-    The SQL command will be something like SELECT ev.aem_name FROM `1_event_master` ev WHERE ev.aem_organized_by = 'ibentos';
-    \nExample 9:List all the hall names  of the ibentos?
+    \nExample 8:List all the hall names  of the ibentos?
     The SQL command will be something like SELECT DISTINCT ehc.ehc_hall_name,ehc.ehc_name FROM `1_event_master` aem JOIN `1_exhibitor_event_mapping` eem ON aem.aem_id = eem.aem_id JOIN `1_exhibitor_hall_category` ehc ON eem.ehc_id = ehc.ehc_id WHERE aem.aem_organized_by = 'ibentos';
-    \nExample 10: List all organization names of the exhibitors?
+    \nExample 9: List all organization names of the exhibitors?
     The SQL command will be something like SELECT exhim_organization_name from 1_exhibitor_master;
 
     also the sql code should not have ``` in beginning or end and sql word in output
